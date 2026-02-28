@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="20"
+      alignment="CENTER"
+      style="-fx-padding:40;"
+      xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.controlbano.control_salidas.controllerfx.LoginController">
+
+    <Label text="Control de Salidas al Baño"
+           style="-fx-font-size:26px;-fx-font-weight:bold;"/>
+
+    <ComboBox fx:id="comboUsuarios"
+              promptText="Seleccione usuario"
+              prefWidth="250"/>
+
+    <PasswordField fx:id="txtPassword"
+                   promptText="Password (solo admin)"
+                   prefWidth="250"/>
+
+    <Button fx:id="btnEntrar"
+            text="Entrar"
+            onAction="#login"
+            prefWidth="250"/>
+
+    <Label fx:id="lblError"
+           style="-fx-text-fill:red"/>
+
+</VBox>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.controlbano.control_salidas.controllerfx.dashboard.DashboardController"
+      spacing="20"
+      alignment="CENTER"
+      style="-fx-padding:40">
+
+    <Label text="Dashboard Control de Baños"
+           style="-fx-font-size:28px;-fx-font-weight:bold"/>
+
+    <HBox spacing="10" alignment="CENTER">
+
+        <Label text="Linea:"/>
+        <ComboBox fx:id="comboLineas" prefWidth="150"/>
+
+        <Label text="Fecha:"/>
+        <DatePicker fx:id="datePickerFecha"/>
+
+        <TextField fx:id="txtBuscarEmpleado"
+                   promptText="Buscar empleado..."
+                   prefWidth="200"/>
+
+        <Button text="Exportar PDF"
+                onAction="#exportarPDF"/>
+
+        <Button text="Salir"
+                onAction="#salirSistema"/>
+
+    </HBox>
+
+    <!-- ⭐ TABLEVIEW AGREGADO (CRÍTICO) -->
+
+    <TableView fx:id="tablaRegistros" prefHeight="350">
+
+        <columns>
+
+            <TableColumn fx:id="colCarnet" text="Carnet"/>
+
+            <TableColumn fx:id="colNombre" text="Empleado"/>
+
+            <TableColumn fx:id="colSalida" text="Hora Salida"/>
+
+            <TableColumn fx:id="colEntrada" text="Hora Entrada"/>
+
+            <TableColumn fx:id="colDuracion" text="Duración"/>
+
+            <TableColumn fx:id="colEstado" text="Estado"/>
+
+        </columns>
+
+    </TableView>
+
+</VBox>
