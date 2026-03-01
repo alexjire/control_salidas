@@ -24,40 +24,30 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableScheduling
 public class JavaFxApplication extends Application {
 
+    public static String usuarioLogueado;
+    public static String rolLogueado;
+
     public static ConfigurableApplicationContext context;
 
     public static void main(String[] args) {
         launch(args);
     }
 
-    /*
-    ⭐ Inicializar Spring Context
-     */
     @Override
     public void init(){
-        context = SpringApplication.run(
-                JavaFxApplication.class);
+        context = SpringApplication.run(JavaFxApplication.class);
     }
 
-    /*
-    ⭐ Cache Manager
-     */
     @Bean
     public org.springframework.cache.CacheManager cacheManager(){
         return new ConcurrentMapCacheManager("empleados");
     }
 
-    /*
-    ⭐ Password Encoder Seguridad Profesional
-     */
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
 
-    /*
-    ⭐ JavaFX View Launcher
-     */
     @Override
     public void start(Stage stage) throws Exception {
 
@@ -68,8 +58,17 @@ public class JavaFxApplication extends Application {
 
         Parent root = loader.load();
 
-        stage.setScene(new Scene(root,800,600));
+        Scene scene = new Scene(root);
+
+        stage.setScene(scene);
         stage.setTitle("Control de Salidas al Baño");
+
+        // 🔥 PANTALLA COMPLETA PROFESIONAL
+        stage.setMaximized(true);
+        stage.setFullScreen(true);
+        stage.setFullScreenExitHint(""); // quita mensaje ESC
+        stage.setFullScreenExitKeyCombination(null); // bloquea ESC
+
         stage.show();
     }
 }

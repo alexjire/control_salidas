@@ -7,16 +7,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.stage.Stage;
+
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.controlbano.control_salidas.service.RegistroBanioService;
 import com.controlbano.control_salidas.entity.RegistroBanio;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import javafx.stage.Stage;
-
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
@@ -25,6 +25,7 @@ public class ScannerController {
 
     @FXML private TextField txtCarnet;
     @FXML private Label lblResultado;
+    @FXML private Label lblReloj;
 
     @FXML private TableView<RegistroBanio> tablaRegistros;
 
@@ -45,27 +46,84 @@ public class ScannerController {
 
         context = com.controlbano.control_salidas.JavaFxApplication.context;
 
+        tablaRegistros.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
         configurarTabla();
         aplicarColoresTabla();
+        iniciarReloj();
+
+        // 🔥 Siempre mostrar carnet en MAYÚSCULA
+        txtCarnet.textProperty().addListener((obs, oldValue, newValue) -> {
+            if(newValue != null){
+                txtCarnet.setText(newValue.toUpperCase());
+            }
+        });
 
         txtCarnet.setOnAction(event -> procesarEscaneo());
 
         cargarTabla();
     }
 
+    private void iniciarReloj(){
+
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss",
+                        Locale.forLanguageTag("es"));
+
+        Thread relojThread = new Thread(() -> {
+            try{
+                while(true){
+                    LocalDateTime ahora = LocalDateTime.now();
+                    Platform.runLater(() ->
+                            lblReloj.setText(ahora.format(formatter)));
+                    Thread.sleep(1000);
+                }
+            }catch (Exception ignored){}
+        });
+
+        relojThread.setDaemon(true);
+        relojThread.start();
+    }
+
     private void procesarEscaneo(){
 
         try {
 
-            String carnet = txtCarnet.getText().trim();
+            String carnet = txtCarnet.getText().trim().toUpperCase();
             if(carnet.isEmpty()) return;
 
             RegistroBanio registro = service.procesarEscaneo(carnet);
 
-            mostrarMensaje(registro);
+            DateTimeFormatter formatter =
+                    DateTimeFormatter.ofPattern("hh:mm a",
+                            Locale.forLanguageTag("es"));
+
+            String nombre = registro.getEmpleado().getNombre();
+            String tipo;
+
+            if(registro.getHoraEntrada() == null){
+                tipo = "SALIDA registrada a las " +
+                        registro.getHoraSalida().format(formatter);
+            }else{
+                tipo = "ENTRADA registrada a las " +
+                        registro.getHoraEntrada().format(formatter);
+            }
+
+            lblResultado.setText(
+                    "Carnet: " + carnet +
+                            " | Empleado: " + nombre +
+                            " | " + tipo
+            );
+
+            // 🔥 mensaje desaparece en 5 segundos
+            new Thread(() -> {
+                try {
+                    Thread.sleep(5000);
+                    Platform.runLater(() -> lblResultado.setText(""));
+                } catch (InterruptedException ignored) {}
+            }).start();
 
             txtCarnet.clear();
-
             cargarTabla();
 
         } catch (Exception e){
@@ -73,60 +131,18 @@ public class ScannerController {
         }
     }
 
-    private void mostrarMensaje(RegistroBanio registro){
-
-        DateTimeFormatter formatter =
-                DateTimeFormatter.ofPattern("h:mm a / dd MMM yyyy",
-                        Locale.forLanguageTag("es"));
-
-        String hora = "";
-
-        if(registro.getHoraEntrada()!=null){
-            hora = registro.getHoraEntrada().format(formatter);
-        }
-        else if(registro.getHoraSalida()!=null){
-            hora = registro.getHoraSalida().format(formatter);
-        }
-
-        String tipo =
-                registro.getHoraEntrada()==null ?
-                        "Marca de Salida registrada" :
-                        "Marca de Entrada registrada";
-
-        String texto =
-                "✔ Empleado verificado\n\n" +
-                        registro.getEmpleado().getNombre() + "\n" +
-                        registro.getEmpleado().getCarnet() + "\n\n" +
-                        tipo + "\n" +
-                        "Fecha y hora: " + hora;
-
-        lblResultado.setText(texto);
-
-        new Thread(() -> {
-            try {
-                Thread.sleep(4000);
-                Platform.runLater(() -> lblResultado.setText(""));
-            } catch (InterruptedException ignored){}
-        }).start();
-    }
-
     private void cargarTabla(){
-
-        try{
-
-            tablaRegistros.setItems(
-                    FXCollections.observableArrayList(
-                            service.obtenerRegistrosDelDia()
-                    )
-            );
-
-        }catch (Exception ignored){}
+        tablaRegistros.setItems(
+                FXCollections.observableArrayList(
+                        service.obtenerRegistrosDelDia()
+                )
+        );
     }
 
     private void configurarTabla(){
 
         DateTimeFormatter formatter =
-                DateTimeFormatter.ofPattern("h:mm a / dd MMM yyyy",
+                DateTimeFormatter.ofPattern("h:mm a",
                         Locale.forLanguageTag("es"));
 
         colCarnet.setCellValueFactory(data ->
@@ -171,13 +187,13 @@ public class ScannerController {
                 }
 
                 if("CERRADO".equals(item.getEstado())){
-                    setStyle("-fx-background-color:#c8e6c9;");
+                    setStyle("-fx-background-color:#E8F5E9;");
                 }
                 else if("ABIERTO".equals(item.getEstado())){
-                    setStyle("-fx-background-color:#fff9c4;");
+                    setStyle("-fx-background-color:#FFFDE7;");
                 }
                 else{
-                    setStyle("-fx-background-color:#ffcdd2;");
+                    setStyle("-fx-background-color:#FFEBEE;");
                 }
             }
         });
@@ -185,22 +201,15 @@ public class ScannerController {
 
     @FXML
     public void salirLogin(){
-
         try{
-
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/templates/login.fxml"));
-
             loader.setControllerFactory(
                     com.controlbano.control_salidas.JavaFxApplication.context::getBean);
-
             Parent root = loader.load();
-
             Stage stage = (Stage) txtCarnet.getScene().getWindow();
-
             stage.setScene(new Scene(root));
             stage.show();
-
         }catch (Exception ignored){}
     }
 }

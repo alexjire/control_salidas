@@ -2,50 +2,93 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
 
-<VBox spacing="25"
-      alignment="CENTER"
-      style="-fx-padding: 40; -fx-background-color: #f5f5f5;"
-      xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.controlbano.control_salidas.controllerfx.ScannerController">
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.controlbano.control_salidas.controllerfx.ScannerController"
+           stylesheets="@/styles/app.css"
+           styleClass="root-background">
 
-    <Label text="Control de Salidas al Baño"
-           style="-fx-font-size:26px;-fx-font-weight:bold;"/>
-
-    <TextField fx:id="txtCarnet"
-               promptText="Escanee o escriba el carnet"
-               style="-fx-font-size:18px;"
-               maxWidth="350"/>
-
-    <Label fx:id="lblResultado"
-           wrapText="true"
-           style="-fx-font-size:28px;
-                  -fx-font-weight:bold;
-                  -fx-text-fill:#2c3e50;"/>
-
-    <TableView fx:id="tablaRegistros" prefHeight="300" maxWidth="900">
-
-        <columns>
-
-            <TableColumn fx:id="colCarnet" text="Carnet" prefWidth="120"/>
-            <TableColumn fx:id="colNombre" text="Nombre" prefWidth="220"/>
-            <TableColumn fx:id="colSalida" text="Salida" prefWidth="180"/>
-            <TableColumn fx:id="colEntrada" text="Entrada" prefWidth="180"/>
-            <TableColumn fx:id="colDuracion" text="Duración" prefWidth="120"/>
-            <TableColumn fx:id="colEstado" text="Estado" prefWidth="100"/>
-
-        </columns>
-
-    </TableView>
-
-    <HBox spacing="20" alignment="CENTER">
-
-        <Button text="Salir"
-                onAction="#salirLogin"
-                prefWidth="150"
-                style="-fx-font-size:16px;"/>
-
+    <!-- LOGO SUPERIOR IZQUIERDO -->
+    <HBox alignment="TOP_LEFT"
+          StackPane.alignment="TOP_LEFT"
+          style="-fx-padding: 25 25 25 60;">
+        <ImageView fitHeight="75" preserveRatio="true">
+            <image>
+                <Image url="@/static/img/Logo-Camtronics.png"/>
+            </image>
+        </ImageView>
     </HBox>
 
-</VBox>
+    <!-- CONTENEDOR GLASS -->
+    <VBox spacing="25"
+          alignment="TOP_CENTER"
+          maxWidth="1800"
+          prefHeight="900"
+          VBox.vgrow="ALWAYS"
+          styleClass="glass-card">
+
+        <Label text="CONTROL DE SALIDAS"
+               styleClass="title-label"/>
+
+        <Label fx:id="lblReloj"
+               styleClass="clock-label"/>
+
+        <TextField fx:id="txtCarnet"
+                   promptText="Escanee o escriba el carnet"
+                   maxWidth="300"
+                   prefWidth="300"
+                   styleClass="input-field"/>
+
+        <Label fx:id="lblResultado"
+               wrapText="true"
+               alignment="CENTER"
+               styleClass="result-label"/>
+
+        <!-- ⭐ TABLA MÁS ALTA (CAMBIO PRINCIPAL) -->
+        <TableView fx:id="tablaRegistros"
+                   VBox.vgrow="ALWAYS"
+                   prefHeight="700">
+
+            <columns>
+                <TableColumn fx:id="colCarnet" text="Carnet"/>
+                <TableColumn fx:id="colNombre" text="Nombre"/>
+                <TableColumn fx:id="colSalida" text="Salida"/>
+                <TableColumn fx:id="colEntrada" text="Entrada"/>
+                <TableColumn fx:id="colDuracion" text="Duración"/>
+                <TableColumn fx:id="colEstado" text="Estado"/>
+            </columns>
+
+        </TableView>
+
+        <Button text="Cerrar Sesión"
+                onAction="#salirLogin"
+                prefWidth="240"
+                styleClass="primary-button"/>
+
+        <!-- FOOTER -->
+        <VBox alignment="CENTER"
+              spacing="12"
+              styleClass="footer-box">
+
+            <ImageView fitHeight="75" preserveRatio="true">
+                <image>
+                    <Image url="@/static/img/Logo-Personal.png"/>
+                </image>
+            </ImageView>
+
+            <Label text="Sistema Empresarial de Control de Salidas"
+                   styleClass="footer-title"/>
+
+            <Label text="Desarrollado por José A. Jimenez Reyes"
+                   styleClass="footer-subtitle"/>
+
+            <Label text="© 2026 Todos los derechos reservados"
+                   styleClass="footer-subtitle"/>
+
+        </VBox>
+
+    </VBox>
+
+</StackPane>

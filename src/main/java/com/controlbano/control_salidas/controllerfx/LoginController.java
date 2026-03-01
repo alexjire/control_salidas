@@ -1,5 +1,6 @@
 package com.controlbano.control_salidas.controllerfx;
 
+import com.controlbano.control_salidas.JavaFxApplication;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -87,6 +88,8 @@ public class LoginController {
             }
 
             String rol = user.getRol().toUpperCase();
+            JavaFxApplication.usuarioLogueado = user.getUsername();
+            JavaFxApplication.rolLogueado = user.getRol();
 
             boolean esAdmin = rol.contains("ADMIN");
 

@@ -1,0 +1,177 @@
+/* ===================================================== */
+/*                    FONDO GENERAL                      */
+/* ===================================================== */
+
+.root-background{
+    -fx-background-color: linear-gradient(to bottom right, #0f2027, #203a43, #2c5364);
+    -fx-font-family: "Segoe UI", Arial;
+}
+
+/* ===================================================== */
+/*                    GLASS PRINCIPAL                    */
+/* ===================================================== */
+
+.glass-card{
+    -fx-background-color: rgba(255,255,255,0.10);
+    -fx-background-radius: 30;
+    -fx-border-radius: 30;
+    -fx-border-color: rgba(255,255,255,0.25);
+    -fx-border-width: 1.5;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 45, 0.3, 0, 20);
+    -fx-padding: 30;
+}
+
+/* ===================================================== */
+/*                        TITULO                         */
+/* ===================================================== */
+
+.title-label{
+    -fx-font-size: 34px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-letter-spacing: 3px;
+}
+
+/* ===================================================== */
+/*                        INPUT                          */
+/* ===================================================== */
+
+.input-field{
+    -fx-background-radius: 12;
+    -fx-padding: 6 10;
+    -fx-font-size: 14px;
+    -fx-pref-height: 32px;
+    -fx-background-color: rgba(255,255,255,0.95);
+    -fx-border-radius: 12;
+}
+
+.input-field:focused{
+    -fx-border-color: #42A5F5;
+    -fx-border-width: 2;
+}
+
+/* ===================================================== */
+/*                    MENSAJE                            */
+/* ===================================================== */
+
+.result-label{
+    -fx-font-size: 14px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+/* ===================================================== */
+/*                BOTÓN GLASS                            */
+/* ===================================================== */
+
+.primary-button{
+    -fx-background-color: rgba(255,255,255,0.15);
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 25;
+    -fx-padding: 6 18;
+    -fx-border-radius: 25;
+    -fx-border-color: rgba(255,255,255,0.35);
+    -fx-border-width: 1.2;
+    -fx-cursor: hand;
+}
+
+.primary-button:hover{
+    -fx-background-color: rgba(255,255,255,0.25);
+}
+
+/* ===================================================== */
+/*                      TABLA PRO                        */
+/* ===================================================== */
+
+.table-view{
+    -fx-background-color: rgba(255,255,255,0.97);
+    -fx-background-radius: 20;
+    -fx-font-size: 14px;
+    -fx-padding: 4;
+}
+
+/* Texto negro siempre */
+.table-view,
+.table-cell,
+.table-row-cell {
+    -fx-text-fill: black;
+}
+
+/* ⭐ Altura profesional de fila */
+.table-row-cell{
+    -fx-cell-size: 38px;
+}
+
+/* Hover */
+.table-row-cell:hover {
+    -fx-background-color: rgb(235,235,235);
+}
+
+.table-row-cell:hover .text {
+    -fx-fill: black;
+}
+
+/* Selección */
+.table-row-cell:filled:selected {
+    -fx-background-color: rgb(180,180,180);
+}
+
+.table-row-cell:filled:selected .text {
+    -fx-fill: black;
+}
+
+.table-cell:filled:selected {
+    -fx-text-fill: black;
+}
+
+/* ===================================================== */
+/*                    ENCABEZADO                         */
+/* ===================================================== */
+
+.table-view .column-header-background{
+    -fx-background-color: white;
+    -fx-background-radius: 20 20 0 0;
+}
+
+.table-view .column-header .label{
+    -fx-text-fill: black;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+/* ===================================================== */
+/*                SCROLLBAR LIMPIA                       */
+/* ===================================================== */
+
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: rgba(0,0,0,0.35);
+    -fx-background-radius: 10;
+}
+
+/* ===================================================== */
+/*                     FOOTER                            */
+/* ===================================================== */
+
+.footer-box{
+    -fx-padding: 3 0 2 0;
+    -fx-spacing: 2;
+    -fx-border-color: rgba(255,255,255,0.15) transparent transparent transparent;
+    -fx-border-width: 0.8;
+}
+
+.footer-title{
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.footer-subtitle{
+    -fx-text-fill: #cfcfcf;
+    -fx-font-size: 9px;
+}
