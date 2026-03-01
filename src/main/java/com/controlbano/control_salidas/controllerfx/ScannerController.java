@@ -1,19 +1,26 @@
 package com.controlbano.control_salidas.controllerfx;
 
 import com.controlbano.control_salidas.JavaFxApplication;
-import com.controlbano.control_salidas.entity.RegistroBanio;
-import com.controlbano.control_salidas.service.RegistroBanioService;
-
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.collections.FXCollections;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.control.TableRow;
 import javafx.util.Duration;
 
+import javafx.collections.FXCollections;
+import javafx.stage.Stage;
+
+import javafx.beans.property.SimpleStringProperty;
+
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.controlbano.control_salidas.service.RegistroBanioService;
+import com.controlbano.control_salidas.entity.RegistroBanio;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -38,29 +45,37 @@ public class ScannerController {
     @Autowired
     private RegistroBanioService service;
 
-    // ⭐ Timeline único para limpiar mensaje
-    private Timeline limpiarTimeline;
+    private ConfigurableApplicationContext context;
 
-    // =====================================================
-    // INITIALIZE
-    // =====================================================
+    /* ===================================================== */
+    /* INITIALIZE */
+    /* ===================================================== */
 
     @FXML
     public void initialize(){
+
+        context = com.controlbano.control_salidas.JavaFxApplication.context;
+
+        tablaRegistros.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         configurarTabla();
         aplicarColoresTabla();
         iniciarReloj();
 
-        // ⭐ Enter ejecuta escaneo
-        txtCarnet.setOnAction(e -> procesarEscaneo());
+        txtCarnet.textProperty().addListener((obs, oldValue, newValue) -> {
+            if(newValue != null){
+                txtCarnet.setText(newValue.toUpperCase());
+            }
+        });
+
+        txtCarnet.setOnAction(event -> procesarEscaneo());
 
         cargarTabla();
     }
 
-    // =====================================================
-    // RELOJ
-    // =====================================================
+    /* ===================================================== */
+    /* RELOJ PROFESIONAL */
+    /* ===================================================== */
 
     private void iniciarReloj(){
 
@@ -69,23 +84,24 @@ public class ScannerController {
                         Locale.forLanguageTag("es"));
 
         Timeline timeline = new Timeline(
-                new KeyFrame(Duration.seconds(1),
-                        e -> lblReloj.setText(
-                                LocalDateTime.now().format(formatter)))
+                new KeyFrame(Duration.seconds(1), event -> {
+                    lblReloj.setText(LocalDateTime.now().format(formatter));
+                })
         );
 
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
     }
 
-    // =====================================================
-    // MENSAJES PROFESIONALES
-    // =====================================================
+    /* ===================================================== */
+    /* MOSTRAR MENSAJE PROFESIONAL */
+    /* ===================================================== */
 
     private void mostrarMensaje(String mensaje){
 
         if(mensaje == null || mensaje.isEmpty()){
             lblResultado.setText("");
+            lblResultado.setStyle("");
             return;
         }
 
@@ -101,28 +117,23 @@ public class ScannerController {
         """);
     }
 
-    // =====================================================
-    // LIMPIAR MENSAJE AUTOMÁTICO (5s)
-    // =====================================================
+    /* ===================================================== */
+    /* LIMPIAR MENSAJE AUTOMATICO */
+    /* ===================================================== */
 
     private void limpiarMensajeAutomatico(){
 
-        if(limpiarTimeline != null){
-            limpiarTimeline.stop();
-        }
-
-        limpiarTimeline = new Timeline(
+        Timeline timeline = new Timeline(
                 new KeyFrame(Duration.seconds(5),
                         e -> mostrarMensaje(""))
         );
 
-        limpiarTimeline.setCycleCount(1);
-        limpiarTimeline.play();
+        timeline.play();
     }
 
-    // =====================================================
-    // PROCESAR ESCANEO
-    // =====================================================
+    /* ===================================================== */
+    /* PROCESAR ESCANEO */
+    /* ===================================================== */
 
     private void procesarEscaneo(){
 
@@ -138,7 +149,6 @@ public class ScannerController {
                             Locale.forLanguageTag("es"));
 
             String nombre = registro.getEmpleado().getNombre();
-
             String tipo;
 
             if(registro.getHoraEntrada() == null){
@@ -166,9 +176,9 @@ public class ScannerController {
         }
     }
 
-    // =====================================================
-    // TABLA DATA
-    // =====================================================
+    /* ===================================================== */
+    /* TABLA DATA */
+    /* ===================================================== */
 
     private void cargarTabla(){
 
@@ -179,9 +189,9 @@ public class ScannerController {
         );
     }
 
-    // =====================================================
-    // CONFIGURAR TABLA
-    // =====================================================
+    /* ===================================================== */
+    /* CONFIGURAR TABLA */
+    /* ===================================================== */
 
     private void configurarTabla(){
 
@@ -189,37 +199,37 @@ public class ScannerController {
                 DateTimeFormatter.ofPattern("h:mm a",
                         Locale.forLanguageTag("es"));
 
-        colCarnet.setCellValueFactory(d ->
-                new javafx.beans.property.SimpleStringProperty(
-                        d.getValue().getEmpleado().getCarnet()));
+        colCarnet.setCellValueFactory(data ->
+                new SimpleStringProperty(
+                        data.getValue().getEmpleado().getCarnet()));
 
-        colNombre.setCellValueFactory(d ->
-                new javafx.beans.property.SimpleStringProperty(
-                        d.getValue().getEmpleado().getNombre()));
+        colNombre.setCellValueFactory(data ->
+                new SimpleStringProperty(
+                        data.getValue().getEmpleado().getNombre()));
 
-        colSalida.setCellValueFactory(d ->
-                new javafx.beans.property.SimpleStringProperty(
-                        d.getValue().getHoraSalida()!=null ?
-                                d.getValue().getHoraSalida().format(formatter) : ""));
+        colSalida.setCellValueFactory(data ->
+                new SimpleStringProperty(
+                        data.getValue().getHoraSalida()!=null ?
+                                data.getValue().getHoraSalida().format(formatter) : ""));
 
-        colEntrada.setCellValueFactory(d ->
-                new javafx.beans.property.SimpleStringProperty(
-                        d.getValue().getHoraEntrada()!=null ?
-                                d.getValue().getHoraEntrada().format(formatter) : ""));
+        colEntrada.setCellValueFactory(data ->
+                new SimpleStringProperty(
+                        data.getValue().getHoraEntrada()!=null ?
+                                data.getValue().getHoraEntrada().format(formatter) : ""));
 
-        colDuracion.setCellValueFactory(d ->
-                new javafx.beans.property.SimpleStringProperty(
-                        d.getValue().getDuracionMinutos()!=null ?
-                                d.getValue().getDuracionMinutos()+" min" : ""));
+        colDuracion.setCellValueFactory(data ->
+                new SimpleStringProperty(
+                        data.getValue().getDuracionMinutos()!=null ?
+                                data.getValue().getDuracionMinutos()+" min" : ""));
 
-        colEstado.setCellValueFactory(d ->
-                new javafx.beans.property.SimpleStringProperty(
-                        d.getValue().getEstado()));
+        colEstado.setCellValueFactory(data ->
+                new SimpleStringProperty(
+                        data.getValue().getEstado()));
     }
 
-    // =====================================================
-    // COLORES TABLA
-    // =====================================================
+    /* ===================================================== */
+    /* COLORES TABLA */
+    /* ===================================================== */
 
     private void aplicarColoresTabla(){
 
@@ -229,7 +239,10 @@ public class ScannerController {
             protected void updateItem(RegistroBanio item, boolean empty) {
                 super.updateItem(item, empty);
 
-                if(item == null || empty) return;
+                if(item == null || empty){
+                    setStyle("");
+                    return;
+                }
 
                 if("CERRADO".equals(item.getEstado())){
                     setStyle("-fx-background-color:#E8F5E9;");
@@ -244,12 +257,12 @@ public class ScannerController {
         });
     }
 
-    // =====================================================
-    // LOGOUT
-    // =====================================================
+    /* ===================================================== */
+    /* LOGOUT */
+    /* ===================================================== */
 
     @FXML
-    public void salirLogin(){
+    public void salirSistema(){
         JavaFxApplication.cambiarVista(
                 "/templates/login.fxml",
                 false

@@ -1,24 +1,30 @@
 package com.controlbano.control_salidas.controllerfx.dashboard;
 
-import com.controlbano.control_salidas.JavaFxApplication;
-import com.controlbano.control_salidas.entity.RegistroBanio;
-import com.controlbano.control_salidas.repository.LineaRepository;
-import com.controlbano.control_salidas.repository.RegistroBanioRepository;
-import com.controlbano.control_salidas.service.PdfService;
-
-import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import javafx.stage.FileChooser;
+import javafx.scene.control.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.controlbano.control_salidas.repository.RegistroBanioRepository;
+import com.controlbano.control_salidas.repository.LineaRepository;
+import com.controlbano.control_salidas.entity.RegistroBanio;
+import com.controlbano.control_salidas.service.PdfService;
+import com.controlbano.control_salidas.JavaFxApplication;
+
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
 
 import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -49,12 +55,15 @@ public class DashboardController {
     @FXML
     public void initialize(){
 
+        System.out.println("Rol logueado: " + JavaFxApplication.rolLogueado);
+
         datePickerFecha.setValue(LocalDate.now());
 
         cargarLineas();
         configurarTabla();
 
         iniciarReloj();
+        controlarVisibilidadReloj();
 
         comboLineas.setOnAction(e -> cargarTabla());
         datePickerFecha.setOnAction(e -> cargarTabla());
@@ -63,14 +72,22 @@ public class DashboardController {
                 .addListener((obs, oldVal, newVal) -> cargarTabla());
     }
 
-    // ===============================
-    // RELOJ
-    // ===============================
+    // ===========================
+    // VISIBILIDAD RELOJ
+    // ===========================
+    private void controlarVisibilidadReloj(){
+        lblReloj.setVisible(true);
+        lblReloj.setManaged(true);
+    }
 
+    // ===========================
+    // RELOJ EN TIEMPO REAL
+    // ===========================
     private void iniciarReloj(){
 
         DateTimeFormatter formatter =
-                DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss",
+                DateTimeFormatter.ofPattern(
+                        "dd/MM/yyyy HH:mm:ss",
                         Locale.forLanguageTag("es"));
 
         relojThread = new Thread(() -> {
@@ -85,10 +102,9 @@ public class DashboardController {
                             lblReloj.setText(ahora.format(formatter)));
 
                     Thread.sleep(1000);
-
                 }
 
-            }catch(Exception ignored){}
+            }catch (Exception ignored){}
 
         });
 
@@ -96,6 +112,9 @@ public class DashboardController {
         relojThread.start();
     }
 
+    // ===========================
+    // CARGAR LINEAS
+    // ===========================
     private void cargarLineas(){
 
         comboLineas.setItems(
@@ -109,19 +128,20 @@ public class DashboardController {
         );
     }
 
+    // ===========================
+    // CARGAR TABLA
+    // ===========================
     @FXML
     public void cargarTabla(){
 
         if(comboLineas.getValue()==null)
             return;
 
+        String linea = comboLineas.getValue();
         LocalDate fecha = datePickerFecha.getValue();
 
         List<RegistroBanio> registros =
-                registroRepo.findByEmpleadoLineaNombreAndFecha(
-                        comboLineas.getValue(),
-                        fecha
-                );
+                registroRepo.findByEmpleadoLineaNombreAndFecha(linea, fecha);
 
         String filtro = txtBuscarEmpleado.getText();
 
@@ -137,10 +157,14 @@ public class DashboardController {
                 FXCollections.observableArrayList(registros));
     }
 
+    // ===========================
+    // CONFIGURAR TABLA
+    // ===========================
     private void configurarTabla(){
 
         DateTimeFormatter formatter =
-                DateTimeFormatter.ofPattern("h:mm a / dd MMM yyyy",
+                DateTimeFormatter.ofPattern(
+                        "h:mm a / dd MMM yyyy",
                         Locale.forLanguageTag("es"));
 
         colCarnet.setCellValueFactory(d ->
@@ -169,8 +193,16 @@ public class DashboardController {
         colEstado.setCellValueFactory(d ->
                 new javafx.beans.property.SimpleStringProperty(
                         d.getValue().getEstado()));
+
+        // ⭐ EVITAR COLUMNA VACÍA
+        tablaRegistros.setColumnResizePolicy(
+                TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS
+        );
     }
 
+    // ===========================
+    // EXPORTAR PDF
+    // ===========================
     @FXML
     public void exportarPDF(){
 
@@ -192,7 +224,7 @@ public class DashboardController {
 
             File archivo =
                     fileChooser.showSaveDialog(
-                            tablaRegistros.getScene().getWindow());
+                            (Stage) tablaRegistros.getScene().getWindow());
 
             if(archivo!=null){
 
@@ -206,10 +238,14 @@ public class DashboardController {
             }
 
         }catch(Exception e){
+            e.printStackTrace();
             mostrarAlerta("Error generando PDF");
         }
     }
 
+    // ===========================
+    // SALIR SISTEMA
+    // ===========================
     @FXML
     public void salirSistema(){
         JavaFxApplication.cambiarVista(
@@ -218,6 +254,9 @@ public class DashboardController {
         );
     }
 
+    // ===========================
+    // ALERTAS
+    // ===========================
     private void mostrarAlerta(String mensaje){
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

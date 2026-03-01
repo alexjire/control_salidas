@@ -63,8 +63,7 @@
         </TableView>
 
         <Button text="Cerrar Sesión"
-                onAction="#salirLogin"
-                prefWidth="240"
+                onAction="#salirSistema"
                 styleClass="primary-button"/>
 
         <!-- FOOTER -->
