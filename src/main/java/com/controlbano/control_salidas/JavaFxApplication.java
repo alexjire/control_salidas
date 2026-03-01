@@ -1,21 +1,20 @@
 package com.controlbano.control_salidas;
 
 import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.Parent;
-import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.Bean;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 
 import org.springframework.scheduling.annotation.EnableScheduling;
-
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -24,12 +23,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableScheduling
 public class JavaFxApplication extends Application {
 
+    public static ConfigurableApplicationContext context;
+
+    private static Stage primaryStage;
+
     public static String usuarioLogueado;
     public static String rolLogueado;
 
-    public static ConfigurableApplicationContext context;
-
-    public static void main(String[] args) {
+    public static void main(String[] args){
         launch(args);
     }
 
@@ -49,26 +50,49 @@ public class JavaFxApplication extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage){
 
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/templates/login.fxml"));
+        primaryStage = stage;
 
-        loader.setControllerFactory(context::getBean);
+        cambiarVista("/templates/login.fxml", false);
 
-        Parent root = loader.load();
+        primaryStage.setTitle("Control de Salidas al Baño");
+        primaryStage.show();
+    }
 
-        Scene scene = new Scene(root);
+    // ⭐ NAVIGATION GLOBAL
+    public static void cambiarVista(String fxml, boolean maximizar){
 
-        stage.setScene(scene);
-        stage.setTitle("Control de Salidas al Baño");
+        try{
 
-        // 🔥 PANTALLA COMPLETA PROFESIONAL
-        stage.setMaximized(true);
-        stage.setFullScreen(true);
-        stage.setFullScreenExitHint(""); // quita mensaje ESC
-        stage.setFullScreenExitKeyCombination(null); // bloquea ESC
+            FXMLLoader loader =
+                    new FXMLLoader(
+                            JavaFxApplication.class.getResource(fxml));
 
-        stage.show();
+            loader.setControllerFactory(context::getBean);
+
+            Parent root = loader.load();
+
+            Scene scene = new Scene(root);
+
+            primaryStage.setScene(scene);
+
+            primaryStage.setFullScreen(false);
+            primaryStage.setResizable(true);
+
+            if(maximizar){
+                primaryStage.setMaximized(true);
+            }else{
+                primaryStage.setMaximized(false);
+
+                primaryStage.setWidth(420);
+                primaryStage.setHeight(520);
+            }
+
+            primaryStage.centerOnScreen();
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }

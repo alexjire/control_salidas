@@ -1,30 +1,24 @@
 package com.controlbano.control_salidas.controllerfx.dashboard;
 
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.stage.FileChooser;
-import javafx.scene.control.*;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.controlbano.control_salidas.repository.RegistroBanioRepository;
-import com.controlbano.control_salidas.repository.LineaRepository;
-import com.controlbano.control_salidas.entity.RegistroBanio;
-import com.controlbano.control_salidas.service.PdfService;
 import com.controlbano.control_salidas.JavaFxApplication;
+import com.controlbano.control_salidas.entity.RegistroBanio;
+import com.controlbano.control_salidas.repository.LineaRepository;
+import com.controlbano.control_salidas.repository.RegistroBanioRepository;
+import com.controlbano.control_salidas.service.PdfService;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.stage.FileChooser;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -55,15 +49,12 @@ public class DashboardController {
     @FXML
     public void initialize(){
 
-        System.out.println("Rol logueado: " + JavaFxApplication.rolLogueado);
-
         datePickerFecha.setValue(LocalDate.now());
 
         cargarLineas();
         configurarTabla();
 
         iniciarReloj();
-        controlarVisibilidadReloj();
 
         comboLineas.setOnAction(e -> cargarTabla());
         datePickerFecha.setOnAction(e -> cargarTabla());
@@ -72,23 +63,14 @@ public class DashboardController {
                 .addListener((obs, oldVal, newVal) -> cargarTabla());
     }
 
-    // ================================
-    // VISIBILIDAD RELOJ (FORZADO PARA TODOS)
-    // ================================
-    private void controlarVisibilidadReloj(){
+    // ===============================
+    // RELOJ
+    // ===============================
 
-        lblReloj.setVisible(true);
-        lblReloj.setManaged(true);
-    }
-
-    // ================================
-    // RELOJ EN TIEMPO REAL
-    // ================================
     private void iniciarReloj(){
 
         DateTimeFormatter formatter =
-                DateTimeFormatter.ofPattern(
-                        "dd/MM/yyyy HH:mm:ss",
+                DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss",
                         Locale.forLanguageTag("es"));
 
         relojThread = new Thread(() -> {
@@ -103,9 +85,10 @@ public class DashboardController {
                             lblReloj.setText(ahora.format(formatter)));
 
                     Thread.sleep(1000);
+
                 }
 
-            }catch (Exception ignored){}
+            }catch(Exception ignored){}
 
         });
 
@@ -132,11 +115,13 @@ public class DashboardController {
         if(comboLineas.getValue()==null)
             return;
 
-        String linea = comboLineas.getValue();
         LocalDate fecha = datePickerFecha.getValue();
 
         List<RegistroBanio> registros =
-                registroRepo.findByEmpleadoLineaNombreAndFecha(linea, fecha);
+                registroRepo.findByEmpleadoLineaNombreAndFecha(
+                        comboLineas.getValue(),
+                        fecha
+                );
 
         String filtro = txtBuscarEmpleado.getText();
 
@@ -155,8 +140,7 @@ public class DashboardController {
     private void configurarTabla(){
 
         DateTimeFormatter formatter =
-                DateTimeFormatter.ofPattern(
-                        "h:mm a / dd MMM yyyy",
+                DateTimeFormatter.ofPattern("h:mm a / dd MMM yyyy",
                         Locale.forLanguageTag("es"));
 
         colCarnet.setCellValueFactory(d ->
@@ -208,7 +192,7 @@ public class DashboardController {
 
             File archivo =
                     fileChooser.showSaveDialog(
-                            (Stage) tablaRegistros.getScene().getWindow());
+                            tablaRegistros.getScene().getWindow());
 
             if(archivo!=null){
 
@@ -222,9 +206,16 @@ public class DashboardController {
             }
 
         }catch(Exception e){
-            e.printStackTrace();
             mostrarAlerta("Error generando PDF");
         }
+    }
+
+    @FXML
+    public void salirSistema(){
+        JavaFxApplication.cambiarVista(
+                "/templates/login.fxml",
+                false
+        );
     }
 
     private void mostrarAlerta(String mensaje){
@@ -233,28 +224,5 @@ public class DashboardController {
         alert.setHeaderText(null);
         alert.setContentText(mensaje);
         alert.showAndWait();
-    }
-
-    @FXML
-    public void salirSistema(){
-
-        try{
-
-            FXMLLoader loader =
-                    new FXMLLoader(
-                            getClass().getResource("/templates/login.fxml"));
-
-            loader.setControllerFactory(
-                    JavaFxApplication.context::getBean);
-
-            Parent root = loader.load();
-
-            Stage stage =
-                    (Stage) tablaRegistros.getScene().getWindow();
-
-            stage.setScene(new Scene(root));
-            stage.show();
-
-        }catch (Exception ignored){}
     }
 }

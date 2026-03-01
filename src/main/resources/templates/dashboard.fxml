@@ -2,41 +2,55 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
 
-<StackPane xmlns="http://javafx.com/javafx"
-           xmlns:fx="http://javafx.com/fxml"
-           fx:controller="com.controlbano.control_salidas.controllerfx.dashboard.DashboardController"
-           stylesheets="@/styles/app.css"
-           styleClass="root-background">
+<StackPane
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="com.controlbano.control_salidas.controllerfx.dashboard.DashboardController"
+        stylesheets="@/styles/app.css"
+        styleClass="root-background">
 
+    <!-- LOGO SUPERIOR -->
+    <HBox alignment="TOP_LEFT"
+          StackPane.alignment="TOP_LEFT"
+          style="-fx-padding: 25 25 25 40;">
+
+        <ImageView fitHeight="75" preserveRatio="true">
+            <Image url="@/static/img/Logo-Camtronics.png"/>
+        </ImageView>
+    </HBox>
+
+    <!-- GLASS CARD -->
     <VBox spacing="25"
           alignment="TOP_CENTER"
-          styleClass="glass-card">
+          styleClass="glass-card"
+          prefHeight="900"
+          VBox.vgrow="ALWAYS">
 
-        <!-- TITULO -->
         <Label text="CONTROL GENERAL DE SALIDAS"
                styleClass="title-label"/>
 
-        <!-- RELOJ -->
         <Label fx:id="lblReloj"
                styleClass="clock-label"/>
 
         <!-- FILTROS -->
-        <HBox spacing="15" alignment="CENTER">
+        <HBox spacing="18" alignment="CENTER">
 
-            <Label text="Línea:" style="-fx-text-fill:white;"/>
+            <Label text="Línea:"/>
 
             <ComboBox fx:id="comboLineas"
                       prefWidth="160"/>
 
-            <Label text="Fecha:" style="-fx-text-fill:white;"/>
+            <Label text="Fecha:"/>
 
             <DatePicker fx:id="datePickerFecha"
                         prefWidth="160"/>
 
             <TextField fx:id="txtBuscarEmpleado"
                        promptText="Buscar empleado..."
-                       prefWidth="220"/>
+                       prefWidth="220"
+                       styleClass="input-field"/>
 
             <Button text="Exportar PDF"
                     onAction="#exportarPDF"
@@ -45,16 +59,15 @@
             <Button text="Salir"
                     onAction="#salirSistema"
                     styleClass="primary-button"/>
-
         </HBox>
 
         <!-- TABLA -->
         <TableView fx:id="tablaRegistros"
-                   prefHeight="420"
-                   prefWidth="1050">
+                   VBox.vgrow="ALWAYS"
+                   maxWidth="1150"
+                   prefHeight="520">
 
             <columns>
-
                 <TableColumn fx:id="colCarnet"
                              text="Carnet"
                              prefWidth="120"/>
@@ -78,11 +91,27 @@
                 <TableColumn fx:id="colEstado"
                              text="Estado"
                              prefWidth="120"/>
-
             </columns>
-
         </TableView>
 
-    </VBox>
+        <!-- FOOTER CON LOGO -->
+        <VBox alignment="CENTER"
+              spacing="12"
+              styleClass="footer-box">
 
+            <ImageView fitHeight="75" preserveRatio="true">
+                <Image url="@/static/img/Logo-Personal.png"/>
+            </ImageView>
+
+            <Label text="Sistema Empresarial de Control de Salidas"
+                   styleClass="footer-title"/>
+
+            <Label text="Desarrollado por José A. Jimenez Reyes"
+                   styleClass="footer-subtitle"/>
+
+            <Label text="© 2026 Todos los derechos reservados"
+                   styleClass="footer-subtitle"/>
+        </VBox>
+
+    </VBox>
 </StackPane>

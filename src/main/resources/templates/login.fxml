@@ -3,30 +3,39 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="20"
-      alignment="CENTER"
-      style="-fx-padding:40;"
-      xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.controlbano.control_salidas.controllerfx.LoginController">
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.controlbano.control_salidas.controllerfx.LoginController"
+           stylesheets="@/styles/login.css"
+           styleClass="login-root">
 
-    <Label text="Control de Salidas al Baño"
-           style="-fx-font-size:26px;-fx-font-weight:bold;"/>
+    <VBox spacing="25"
+          alignment="CENTER"
+          maxWidth="400"
+          styleClass="login-card">
 
-    <ComboBox fx:id="comboUsuarios"
-              promptText="Seleccione usuario"
-              prefWidth="250"/>
+        <Label text="CONTROL DE SALIDAS"
+               styleClass="login-title"/>
 
-    <PasswordField fx:id="txtPassword"
-                   promptText="Password (solo admin)"
-                   prefWidth="250"/>
+        <ComboBox fx:id="comboUsuarios"
+                  promptText="Usuario"
+                  prefWidth="260"
+                  styleClass="login-input"/>
 
-    <Button fx:id="btnEntrar"
-            text="Entrar"
-            onAction="#login"
-            prefWidth="250"/>
+        <PasswordField fx:id="txtPassword"
+                       promptText="Password"
+                       prefWidth="260"
+                       styleClass="login-input"/>
 
-    <Label fx:id="lblError"
-           style="-fx-text-fill:red"/>
+        <Label fx:id="lblError"
+               styleClass="login-error"/>
 
-</VBox>
+        <Button text="INGRESAR"
+                fx:id="btnEntrar"
+                onAction="#login"
+                prefWidth="260"
+                styleClass="login-button"/>
+
+    </VBox>
+
+</StackPane>

@@ -1,0 +1,78 @@
+/* ===============================
+   LOGIN ROOT BACKGROUND
+================================*/
+
+.login-root{
+    -fx-background-color: linear-gradient(
+        to bottom right,
+        #0f2027,
+        #203a43,
+        #2c5364
+    );
+    -fx-font-family: "Segoe UI";
+}
+
+/* ===============================
+   GLASS CARD STYLE
+================================*/
+
+.login-card{
+    -fx-background-color: rgba(255,255,255,0.08);
+    -fx-background-radius: 35;
+    -fx-padding: 45;
+    -fx-effect: dropshadow(gaussian,
+        rgba(0,0,0,0.55),
+        45,0.3,0,25);
+}
+
+/* ===============================
+   TITLE
+================================*/
+
+.login-title{
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #00e5ff;
+    -fx-letter-spacing: 2px;
+}
+
+/* ===============================
+   INPUTS MODERNOS
+================================*/
+
+.login-input{
+    -fx-pref-height: 42px;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+}
+
+.login-input:focused{
+    -fx-border-color: #00e5ff;
+    -fx-border-width: 2px;
+}
+
+/* ===============================
+   BOTÓN PREMIUM
+================================*/
+
+.login-button{
+    -fx-background-color: #00e5ff;
+    -fx-text-fill: #1f293a;
+    -fx-font-weight: bold;
+    -fx-background-radius: 25;
+    -fx-pref-height: 42px;
+    -fx-cursor: hand;
+}
+
+.login-button:hover{
+    -fx-opacity: 0.85;
+}
+
+/* ===============================
+   ERROR LABEL
+================================*/
+
+.login-error{
+    -fx-text-fill: #ff5252;
+    -fx-font-size: 14px;
+}

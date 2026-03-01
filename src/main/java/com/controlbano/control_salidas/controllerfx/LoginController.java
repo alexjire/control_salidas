@@ -1,22 +1,16 @@
 package com.controlbano.control_salidas.controllerfx;
 
 import com.controlbano.control_salidas.JavaFxApplication;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-
-import com.controlbano.control_salidas.service.AuthService;
 import com.controlbano.control_salidas.entity.Usuario;
+import com.controlbano.control_salidas.repository.UsuarioRepository;
+import com.controlbano.control_salidas.service.AuthService;
+
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.collections.FXCollections;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.context.ConfigurableApplicationContext;
-
-import javafx.collections.FXCollections;
-import javafx.application.Platform;
-import javafx.stage.Stage;
 
 import java.util.List;
 
@@ -32,15 +26,18 @@ public class LoginController {
     private AuthService authService;
 
     @Autowired
-    private com.controlbano.control_salidas.repository.UsuarioRepository usuarioRepo;
+    private UsuarioRepository usuarioRepo;
 
-    private ConfigurableApplicationContext context;
+    // =====================================================
+    // INITIALIZE
+    // =====================================================
 
     @FXML
-    public void initialize() {
+    public void initialize(){
 
-        try {
+        try{
 
+            // Cargar usuarios
             List<String> usuarios =
                     usuarioRepo.findAll()
                             .stream()
@@ -51,21 +48,25 @@ public class LoginController {
                     FXCollections.observableArrayList(usuarios)
             );
 
-            context = com.controlbano.control_salidas.JavaFxApplication.context;
-
+            // ⭐ ENTER funciona como click al botón
             btnEntrar.setDefaultButton(true);
 
+            // ⭐ Enter en password también ejecuta login
             txtPassword.setOnAction(e -> login());
 
-        } catch (Exception e) {
+        }catch(Exception e){
             lblError.setText("Error cargando usuarios");
         }
     }
 
-    @FXML
-    public void login() {
+    // =====================================================
+    // LOGIN
+    // =====================================================
 
-        try {
+    @FXML
+    public void login(){
+
+        try{
 
             String username = comboUsuarios.getValue();
             String password = txtPassword.getText();
@@ -77,41 +78,33 @@ public class LoginController {
 
             Usuario user;
 
-        /*
-        ⭐ Si el password está vacío → mandar null al service
-        */
+            // Password opcional
             if(password == null || password.isEmpty()){
                 user = authService.login(username, null);
-            }
-            else{
+            }else{
                 user = authService.login(username, password);
             }
 
-            String rol = user.getRol().toUpperCase();
+            // Guardar sesión global
             JavaFxApplication.usuarioLogueado = user.getUsername();
             JavaFxApplication.rolLogueado = user.getRol();
 
-            boolean esAdmin = rol.contains("ADMIN");
+            // Navegación
+            if(user.getRol().toUpperCase().contains("ADMIN")){
+                JavaFxApplication.cambiarVista(
+                        "/templates/dashboard.fxml",
+                        true
+                );
+            }
+            else{
+                JavaFxApplication.cambiarVista(
+                        "/templates/scanner.fxml",
+                        true
+                );
+            }
 
-            String view = esAdmin
-                    ? "/templates/dashboard.fxml"
-                    : "/templates/scanner.fxml";
-
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource(view));
-
-            loader.setControllerFactory(context::getBean);
-
-            Parent root = loader.load();
-
-            Stage stage = (Stage) comboUsuarios.getScene().getWindow();
-
-            stage.setScene(new Scene(root));
-            stage.show();
-
-        } catch (Exception e) {
+        }catch(Exception e){
             lblError.setText(e.getMessage());
-            e.printStackTrace();
         }
     }
 }
