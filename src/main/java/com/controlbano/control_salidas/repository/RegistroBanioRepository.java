@@ -40,4 +40,5 @@ public interface RegistroBanioRepository
     List<RegistroBanio> findByFecha(
             LocalDate fecha
     );
+
 }

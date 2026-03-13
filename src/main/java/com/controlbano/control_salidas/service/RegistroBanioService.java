@@ -88,4 +88,5 @@ public class RegistroBanioService {
     public List<RegistroBanio> obtenerRegistrosDelDia(){
         return registroRepo.findByFecha(LocalDate.now());
     }
+
 }

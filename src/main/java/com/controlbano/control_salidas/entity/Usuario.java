@@ -13,6 +13,7 @@ public class Usuario {
     private String password;
 
     private String rol;
+    private String linea;
 
     private boolean activo;
 
@@ -47,5 +48,6 @@ public class Usuario {
     public void setActivo(boolean activo) {
         this.activo = activo;
     }
+
 }
 //no cambiar
